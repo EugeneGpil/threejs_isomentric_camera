@@ -7,6 +7,7 @@ export default (canvas) => {
   });
 
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true;
 
   const scene = new T.Scene();
   const width = 10;
@@ -33,18 +34,47 @@ export default (canvas) => {
 
   scene.add(camera);
 
-  const greedHelper = new T.GridHelper(10, 10);
-  scene.add(greedHelper);
+  const greedHelper = new T.GridHelper(10, 20);
+  // scene.add(greedHelper);
 
-  const planeMaterial = new T.MeshBasicMaterial({
+  const planeMaterial = new T.MeshStandardMaterial({
     color: 0xffffff,
   });
   const planeGeometry = new T.PlaneGeometry(10, 10);
   const plane = new T.Mesh(planeGeometry, planeMaterial);
   plane.rotateX((Math.PI * 270) / 180);
+  plane.receiveShadow = true;
   scene.add(plane);
 
   new MapControls(camera, canvas);
+
+  const ambientLight = new T.AmbientLight(0xffffff, 0.175);
+  ambientLight.position.y = 5;
+  scene.add(ambientLight);
+
+  const directionalLight = new T.DirectionalLight(0xffffff, 2);
+  directionalLight.position.y = 300;
+  directionalLight.position.x = 100;
+  directionalLight.position.z = 100;
+  directionalLight.castShadow = true;
+  directionalLight.shadow.mapSize.width = 2048; // default is 512
+  directionalLight.shadow.mapSize.height = 2048; // default is 512
+  scene.add(directionalLight);
+
+  const cube1Material = new T.MeshStandardMaterial({
+    color: 0xffffff,
+  });
+  const cube1Geometry = new T.BoxGeometry(1, 2, 1);
+  const cube1 = new T.Mesh(cube1Geometry, cube1Material);
+  cube1.castShadow = true;
+  scene.add(cube1);
+
+  const cube2Material = new T.MeshStandardMaterial({
+    color: 0x000000,
+  });
+  const cube2Geometry = new T.BoxGeometry(1.025, 0.025, 1.025);
+  const cube2 = new T.Mesh(cube2Geometry, cube2Material);
+  scene.add(cube2);
 
   const animate = () => {
     requestAnimationFrame(animate);
